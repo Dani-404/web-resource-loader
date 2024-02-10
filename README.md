@@ -15,26 +15,26 @@ const resourceManager = new ResourceManager();
 
 const imagesList = [{
     key: "myImageKey",
-    src: "./assets/images/myImage.png"
+    src: "assets/images/myImage.png"
 },
 {
     key: "myImageOtherKey",
-    src: "./assets/images/mySecondImage.png"
+    src: "assets/images/mySecondImage.png"
 }]
 
 const videosList = [{
     key: "video",
-    src: "./assets/video/video.mp4"
+    src: "assets/video/video.mp4"
 }]
 
 const fontsList = [{
     key: "myFont",
-    src: "./assets/audio/myFont.ttf"
+    src: "assets/audio/myFont.ttf"
 }]
 
 const audiosList = [{
     key: "alert",
-    src: "./assets/audio/alert.mp3"
+    src: "assets/audio/alert.mp3"
 }]
 
 resourceManager.addEventListener("start", () => {
