@@ -75,4 +75,4 @@ Methods available for fetch your resoures are:
 - **getFont(key)**
 - **getAudio(key)**
 
-use the paramater **data** or the method **getData()** for get your resource data.
+use the parameter **data** or the method **getData()** for get your resource data.
