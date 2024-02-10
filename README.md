@@ -37,6 +37,17 @@ const audiosList = [{
     src: "./assets/audio/alert.mp3"
 }]
 
+resourceManager.addEventListener("start", () => {
+    console.log("Resource loading starts")
+})
+
+resourceManager.addEventListener("progress", (e: any) => {
+    // e.detail.totalResources display total resources to load
+    // e.detail.loadedResources display loaded resources
+    // e.detail.percentage display percentage
+    console.log("Progress", e.detail)
+})
+
 resourceManager.loadResources({
     images: imagesList,
     videos: videosList,
@@ -54,17 +65,6 @@ resourceManager.loadResources({
         theSecondImage.getData(); // return HTMLImageElement
     }
 }).catch((err) => console.error(err))
-
-resourceManager.addEventListener("start", () => {
-    console.log("Resource loading starts")
-})
-
-resourceManager.addEventListener("progress", (e: any) => {
-    // e.detail.totalResources display total resources to load
-    // e.detail.loadedResources display loaded resources
-    // e.detail.percentage display percentage
-    console.log("Progress", e.detail)
-})
 ```
 
 You need define one key for each item. The keys are unique for each category.
