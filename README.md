@@ -41,7 +41,7 @@ resourceManager.addEventListener("start", () => {
     console.log("Resource loading starts")
 })
 
-resourceManager.addEventListener("progress", (e: any) => {
+resourceManager.addEventListener("progress", (e) => {
     // e.detail.totalResources display total resources to load
     // e.detail.loadedResources display loaded resources
     // e.detail.percentage display percentage
@@ -54,15 +54,16 @@ resourceManager.loadResources({
     fonts: fontsList,
     audios: audiosList
 }).then((message) => {
-    // all resources are loaded do what you want after
+    // all resources are loaded, do what you want after
     console.log(message);
 
     const theSecondImage = resourceManager.getImage("myImageOtherKey");
 
     if (theSecondImage == null) {
-        console.log("myImageOtherKey not loaded")
+        console.log("impossible to find the image with key myImageOtherKey")
     } else {
-        theSecondImage.getData(); // return HTMLImageElement
+        const imageData = theSecondImage.getData(); // return HTMLImageElement
+        console.log("imageData", imageData)
     }
 }).catch((err) => console.error(err))
 ```
