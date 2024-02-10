@@ -31,6 +31,10 @@ export default class ResourceManager extends EventTarget {
             for (let i in images) {
                 const { key, src } = images[i];
 
+                const countItems = images.filter((image) => image.key.toUpperCase() == key.toUpperCase());
+                if(countItems.length > 1)
+                    console.warn(`[WARNING] Duplicate image key ${key}`)
+
                 listOfPromise.push(this.loadResource({
                     type: ResourceList.IMAGE,
                     key,
@@ -40,6 +44,10 @@ export default class ResourceManager extends EventTarget {
 
             for (let i in videos) {
                 const { key, src } = videos[i];
+
+                const countItems = videos.filter((video) => video.key.toUpperCase() == key.toUpperCase());
+                if(countItems.length > 1)
+                    console.warn(`[WARNING] Duplicate video key ${key}`)
 
                 listOfPromise.push(this.loadResource({
                     type: ResourceList.VIDEO,
@@ -51,6 +59,10 @@ export default class ResourceManager extends EventTarget {
             for (let i in fonts) {
                 const { key, src } = fonts[i];
 
+                const countItems = fonts.filter((font) => font.key.toUpperCase() == key.toUpperCase());
+                if(countItems.length > 1)
+                    console.warn(`[WARNING] Duplicate font key ${key}`)
+
                 listOfPromise.push(this.loadResource({
                     type: ResourceList.FONT,
                     key,
@@ -60,6 +72,10 @@ export default class ResourceManager extends EventTarget {
 
             for (let i in audios) {
                 const { key, src } = audios[i];
+
+                const countItems = audios.filter((audio) => audio.key.toUpperCase() == key.toUpperCase());
+                if(countItems.length > 1)
+                    console.warn(`[WARNING] Duplicate audio key ${key}`)
 
                 listOfPromise.push(this.loadResource({
                     type: ResourceList.AUDIO,
@@ -81,11 +97,6 @@ export default class ResourceManager extends EventTarget {
 
             switch (type) {
                 case ResourceList.IMAGE: {
-                    if (this.getImage(key) != null) {
-                        reject(`Duplicate image key ${key}.`)
-                        return;
-                    }
-
                     const image = new Image();
 
                     image.onload = function () {
@@ -108,11 +119,6 @@ export default class ResourceManager extends EventTarget {
                 }
 
                 case ResourceList.VIDEO: {
-                    if (this.getVideo(key) != null) {
-                        reject(`Duplicate video key ${key}.`)
-                        return;
-                    }
-
                     const video = document.createElement("video") as HTMLVideoElement;
 
                     video.onloadeddata = function () {
@@ -129,15 +135,13 @@ export default class ResourceManager extends EventTarget {
                     video.onerror = function () {
                         reject(`Impossible to load video ${key} (${src}).`)
                     };
+
+                    video.src = src;
+                    video.load();
                     break;
                 }
 
                 case ResourceList.FONT: {
-                    if (this.getFont(key) != null) {
-                        reject(`Duplicate font key ${key}.`)
-                        return;
-                    }
-
                     const fontFile = new FontFace(
                         key,
                         `url(${src})`,
@@ -158,11 +162,6 @@ export default class ResourceManager extends EventTarget {
                 }
 
                 case ResourceList.AUDIO: {
-                    if (this.getAudio(key) != null) {
-                        reject(`Duplicate audio key ${key}.`)
-                        return;
-                    }
-
                     const audio = new Audio(src);
 
                     audio.onloadeddata = function () {

@@ -62,6 +62,9 @@ var ResourceManager = class extends EventTarget {
       const listOfPromise = [];
       for (let i in images) {
         const { key, src } = images[i];
+        const countItems = images.filter((image) => image.key.toUpperCase() == key.toUpperCase());
+        if (countItems.length > 1)
+          console.warn(`[WARNING] Duplicate image key ${key}`);
         listOfPromise.push(this.loadResource({
           type: 0 /* IMAGE */,
           key,
@@ -70,6 +73,9 @@ var ResourceManager = class extends EventTarget {
       }
       for (let i in videos) {
         const { key, src } = videos[i];
+        const countItems = videos.filter((video) => video.key.toUpperCase() == key.toUpperCase());
+        if (countItems.length > 1)
+          console.warn(`[WARNING] Duplicate video key ${key}`);
         listOfPromise.push(this.loadResource({
           type: 1 /* VIDEO */,
           key,
@@ -78,6 +84,9 @@ var ResourceManager = class extends EventTarget {
       }
       for (let i in fonts) {
         const { key, src } = fonts[i];
+        const countItems = fonts.filter((font) => font.key.toUpperCase() == key.toUpperCase());
+        if (countItems.length > 1)
+          console.warn(`[WARNING] Duplicate font key ${key}`);
         listOfPromise.push(this.loadResource({
           type: 2 /* FONT */,
           key,
@@ -86,6 +95,9 @@ var ResourceManager = class extends EventTarget {
       }
       for (let i in audios) {
         const { key, src } = audios[i];
+        const countItems = audios.filter((audio) => audio.key.toUpperCase() == key.toUpperCase());
+        if (countItems.length > 1)
+          console.warn(`[WARNING] Duplicate audio key ${key}`);
         listOfPromise.push(this.loadResource({
           type: 3 /* AUDIO */,
           key,
@@ -101,10 +113,6 @@ var ResourceManager = class extends EventTarget {
       const instance = this;
       switch (type) {
         case 0 /* IMAGE */: {
-          if (this.getImage(key) != null) {
-            reject(`Duplicate image key ${key}.`);
-            return;
-          }
           const image = new Image();
           image.onload = function() {
             const imageResource = new ImageResource({
@@ -122,10 +130,6 @@ var ResourceManager = class extends EventTarget {
           break;
         }
         case 1 /* VIDEO */: {
-          if (this.getVideo(key) != null) {
-            reject(`Duplicate video key ${key}.`);
-            return;
-          }
           const video = document.createElement("video");
           video.onloadeddata = function() {
             const videoResource = new VideoResource({
@@ -139,13 +143,11 @@ var ResourceManager = class extends EventTarget {
           video.onerror = function() {
             reject(`Impossible to load video ${key} (${src}).`);
           };
+          video.src = src;
+          video.load();
           break;
         }
         case 2 /* FONT */: {
-          if (this.getFont(key) != null) {
-            reject(`Duplicate font key ${key}.`);
-            return;
-          }
           const fontFile = new FontFace(
             key,
             `url(${src})`
@@ -163,10 +165,6 @@ var ResourceManager = class extends EventTarget {
           break;
         }
         case 3 /* AUDIO */: {
-          if (this.getAudio(key) != null) {
-            reject(`Duplicate audio key ${key}.`);
-            return;
-          }
           const audio = new Audio(src);
           audio.onloadeddata = function() {
             const audioResource = new AudioResource({
