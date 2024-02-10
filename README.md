@@ -57,10 +57,10 @@ resourceManager.loadResources({
     // all resources are loaded do what you want after
     console.log(message);
 
-    const theSecondImage = resourceManager.getImage("theSecondImage");
+    const theSecondImage = resourceManager.getImage("myImageOtherKey");
 
     if (theSecondImage == null) {
-        console.log("theSecondImage not loaded")
+        console.log("myImageOtherKey not loaded")
     } else {
         theSecondImage.getData(); // return HTMLImageElement
     }
