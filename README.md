@@ -24,17 +24,17 @@ const imagesList = [{
 
 const videosList = [{
     key: "video",
-    src: "assets/video/video.mp4"
+    src: "assets/videos/video.mp4"
 }]
 
 const fontsList = [{
     key: "myFont",
-    src: "assets/audio/myFont.ttf"
+    src: "assets/fonts/myFont.ttf"
 }]
 
 const audiosList = [{
     key: "alert",
-    src: "assets/audio/alert.mp3"
+    src: "assets/audios/alert.mp3"
 }]
 
 resourceManager.addEventListener("start", () => {
