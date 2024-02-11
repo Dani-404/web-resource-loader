@@ -22,11 +22,12 @@ resourceManager.loadResources({
     // all resources are loaded, do what you want after
     console.log(message);
 
-    const myLoadedImage = resourceManager.getImage("myKey"); // return HTMLImageElement
+    const myLoadedImage = resourceManager.getImage("myKey"); // return an HTMLImageElement
 
     if (myLoadedImage == null) {
         console.log("impossible to find the image with key myKey")
     } else {
+        document.body.appendChild(myLoadedImage);
         console.log(myLoadedImage)
     }
 }).catch((err) => console.error(err));
@@ -48,7 +49,7 @@ const imagesList = [{
 }]
 
 const videosList = [{
-    key: "video",
+    key: "videoKey",
     src: "assets/videos/video.mp4"
 }]
 
@@ -63,12 +64,12 @@ const audiosList = [{
 }]
 
 const cssList = [{
-    key: "css",
+    key: "myCssFile",
     src: "assets/css/file.css"
 }]
 
 const jsList = [{
-    key: "alert",
+    key: "myJsFile",
     src: "assets/js/file.js"
 }]
 
@@ -88,8 +89,8 @@ resourceManager.loadResources({
     videos: videosList,
     fonts: fontsList,
     audios: audiosList,
-    css: cssList, // append automaticly in <head></head>
-    js: jsList // append automaticly in <head></head>
+    css: cssList, // append automatically in <head></head>
+    js: jsList // append automatically in <head></head>
 }).then((message) => {
     // all resources are loaded, do what you want after
     console.log(message);
@@ -99,6 +100,7 @@ resourceManager.loadResources({
     if (theSecondImage == null) {
         console.log("impossible to find the image with key myImageOtherKey")
     } else {
+        document.body.appendChild(theSecondImage);
         console.log(theSecondImage);
     }
 }).catch((err) => console.error(err));
