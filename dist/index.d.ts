@@ -33,12 +33,12 @@ declare class ResourceManager extends EventTarget {
     private loadResource;
     private countTotalResources;
     private emitProgress;
-    getImage(key: string): any;
-    getVideo(key: string): any;
-    getFont(key: string): any;
-    getAudio(key: string): any;
-    getCss(key: string): any;
-    getJs(key: string): any;
+    getImage(key: string): HTMLImageElement | null;
+    getVideo(key: string): HTMLVideoElement | null;
+    getFont(key: string): FontFace | null;
+    getAudio(key: string): HTMLAudioElement | null;
+    getCss(key: string): HTMLLinkElement | null;
+    getJs(key: string): HTMLScriptElement | null;
 }
 
 declare enum ResourceList {

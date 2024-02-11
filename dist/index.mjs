@@ -103,7 +103,7 @@ var ResourceManager = class extends EventTarget {
         }));
       }
       this.dispatchEvent(new CustomEvent("start"));
-      Promise.all(listOfPromise).then(() => resolve(`[ResourceManager] All resources have been loaded (${images.length} images, ${videos.length} videos, ${fonts.length} fonts, ${audios.length} audios).`)).catch((e) => reject(`[ResourceManager ERROR] ${e}`));
+      Promise.all(listOfPromise).then(() => resolve(`[ResourceManager] All resources have been loaded (${images.length} images, ${videos.length} videos, ${fonts.length} fonts, ${audios.length} audios, ${js.length} js files, ${css.length} css files).`)).catch((e) => reject(`[ResourceManager ERROR] ${e}`));
     });
   }
   loadResource({ type, key, src }) {

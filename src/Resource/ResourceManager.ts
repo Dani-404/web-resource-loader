@@ -115,7 +115,7 @@ export default class ResourceManager extends EventTarget {
 
             this.dispatchEvent(new CustomEvent("start"));
             Promise.all(listOfPromise)
-                .then(() => resolve(`[ResourceManager] All resources have been loaded (${images.length} images, ${videos.length} videos, ${fonts.length} fonts, ${audios.length} audios).`))
+                .then(() => resolve(`[ResourceManager] All resources have been loaded (${images.length} images, ${videos.length} videos, ${fonts.length} fonts, ${audios.length} audios, ${js.length} js files, ${css.length} css files).`))
                 .catch((e) => reject(`[ResourceManager ERROR] ${e}`));
         });
     }
@@ -277,61 +277,61 @@ export default class ResourceManager extends EventTarget {
         }));
     }
 
-    public getImage(key: string): any {
+    public getImage(key: string): HTMLImageElement | null {
         for (let i in this.images) {
             const image = this.images[i];
             if (image.key == key.toUpperCase())
-                return image.getData();
+                return image.getData() as HTMLImageElement;
         }
 
         return null;
     }
 
-    public getVideo(key: string): any {
+    public getVideo(key: string): HTMLVideoElement | null {
         for (let i in this.videos) {
             const video = this.videos[i];
             if (video.key == key.toUpperCase())
-                return video.getData();
+                return video.getData() as HTMLVideoElement;
         }
 
         return null;
     }
 
-    public getFont(key: string): any {
+    public getFont(key: string): FontFace | null {
         for (let i in this.fonts) {
             const font = this.fonts[i];
             if (font.key == key.toUpperCase())
-                return font.getData();
+                return font.getData() as FontFace;
         }
 
         return null;
     }
 
-    public getAudio(key: string): any {
+    public getAudio(key: string): HTMLAudioElement | null {
         for (let i in this.audios) {
             const audio = this.audios[i];
             if (audio.key == key.toUpperCase())
-                return audio.getData();
+                return audio.getData() as HTMLAudioElement;
         }
 
         return null;
     }
 
-    public getCss(key: string): any {
+    public getCss(key: string): HTMLLinkElement | null {
         for (let i in this.css) {
             const cssFile = this.css[i];
             if (cssFile.key == key.toUpperCase())
-                return cssFile.getData();
+                return cssFile.getData() as HTMLLinkElement;
         }
 
         return null;
     }
 
-    public getJs(key: string): any {
+    public getJs(key: string): HTMLScriptElement | null {
         for (let i in this.js) {
             const jsFile = this.js[i];
             if (jsFile.key == key.toUpperCase())
-                return jsFile.getData();
+                return jsFile.getData() as HTMLScriptElement;
         }
 
         return null;
