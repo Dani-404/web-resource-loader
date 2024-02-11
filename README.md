@@ -7,7 +7,33 @@ Load all resources (images, videos, fonts, audio) asynchronously and wait for co
 npm install web-resource-loader
 ```
 
-### Usage
+### Simple usage example
+```javascript
+import ResourceManager from 'web-resource-loader'
+
+const resourceManager = new ResourceManager();
+
+resourceManager.loadResources({
+    images: [{
+        key: "myKey",
+        src: "https://i.imgur.com/rsjPao4.gif"
+    }]
+}).then((message) => {
+    // all resources are loaded, do what you want after
+    console.log(message);
+
+    const myLoadedImage = resourceManager.getImage("myKey");
+
+    if (myLoadedImage == null) {
+        console.log("impossible to find the image with key myKey")
+    } else {
+        const imageData = myLoadedImage.getData(); // return HTMLImageElement
+        console.log("imageData", imageData)
+    }
+}).catch((err) => console.error(err));
+```
+
+### Advanced usage
 ```javascript
 import ResourceManager from 'web-resource-loader'
 
@@ -19,7 +45,7 @@ const imagesList = [{
 },
 {
     key: "myImageOtherKey",
-    src: "assets/images/mySecondImage.png"
+    src: "https://i.imgur.com/rsjPao4.gif"
 }]
 
 const videosList = [{
@@ -65,7 +91,7 @@ resourceManager.loadResources({
         const imageData = theSecondImage.getData(); // return HTMLImageElement
         console.log("imageData", imageData)
     }
-}).catch((err) => console.error(err))
+}).catch((err) => console.error(err));
 ```
 
 You need define one key for each item. The keys are unique for each category.
