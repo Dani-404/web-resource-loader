@@ -2,5 +2,7 @@ export enum ResourceList {
     IMAGE,
     VIDEO,
     FONT,
-    AUDIO
+    AUDIO,
+    JS,
+    CSS
 }

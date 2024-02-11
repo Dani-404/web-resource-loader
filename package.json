@@ -1,7 +1,7 @@
 {
   "name": "web-resource-loader",
-  "version": "1.0.5",
-  "description": "",
+  "version": "1.0.6",
+  "description": "Load all resources (images, videos, fonts, audio, css and js files) asynchronously and wait for complete.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -29,15 +29,12 @@
     "audios",
     "font",
     "fonts",
-    "tileset",
-    "tilesets",
-    "sprites",
-    "sprites"
+    "css",
+    "js"
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/Dani-404/web-resource-loader.git",
-    "directory": "packages/server"
+    "url": "git://github.com/Dani-404/web-resource-loader.git"
   },
   "bugs": {
     "url": "https://github.com/Dani-404/web-resource-loader/issues"

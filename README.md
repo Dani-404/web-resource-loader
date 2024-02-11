@@ -1,10 +1,10 @@
 
 ## web-resource-loader
-Load all resources (images, videos, fonts, audio) asynchronously and wait for complete.
+Load all resources (images, videos, fonts, audio, css and js files) asynchronously and wait for complete.
 
 ### Installation
 ```bash
-npm install web-resource-loader
+npm i web-resource-loader
 ```
 
 ### Simple usage example
@@ -22,13 +22,12 @@ resourceManager.loadResources({
     // all resources are loaded, do what you want after
     console.log(message);
 
-    const myLoadedImage = resourceManager.getImage("myKey");
+    const myLoadedImage = resourceManager.getImage("myKey"); // return HTMLImageElement
 
     if (myLoadedImage == null) {
         console.log("impossible to find the image with key myKey")
     } else {
-        const imageData = myLoadedImage.getData(); // return HTMLImageElement
-        console.log("imageData", imageData)
+        console.log(myLoadedImage)
     }
 }).catch((err) => console.error(err));
 ```
@@ -63,6 +62,16 @@ const audiosList = [{
     src: "assets/audios/alert.mp3"
 }]
 
+const cssList = [{
+    key: "css",
+    src: "assets/css/file.css"
+}]
+
+const jsList = [{
+    key: "alert",
+    src: "assets/js/file.js"
+}]
+
 resourceManager.addEventListener("start", () => {
     console.log("Resource loading starts")
 })
@@ -78,18 +87,19 @@ resourceManager.loadResources({
     images: imagesList,
     videos: videosList,
     fonts: fontsList,
-    audios: audiosList
+    audios: audiosList,
+    css: cssList, // append automaticly in <head></head>
+    js: jsList // append automaticly in <head></head>
 }).then((message) => {
     // all resources are loaded, do what you want after
     console.log(message);
 
-    const theSecondImage = resourceManager.getImage("myImageOtherKey");
+    const theSecondImage = resourceManager.getImage("myImageOtherKey"); // return an HTMLImageElement
 
     if (theSecondImage == null) {
         console.log("impossible to find the image with key myImageOtherKey")
     } else {
-        const imageData = theSecondImage.getData(); // return HTMLImageElement
-        console.log("imageData", imageData)
+        console.log(theSecondImage);
     }
 }).catch((err) => console.error(err));
 ```
@@ -100,5 +110,5 @@ Methods available for fetch your resoures are:
 - **getVideo(key)**
 - **getFont(key)**
 - **getAudio(key)**
-
-use the parameter **data** or the method **getData()** for get your resource data.
+- **getJs(key)**
+- **getCss(key)**
