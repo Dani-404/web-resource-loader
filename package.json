@@ -1,6 +1,6 @@
 {
   "name": "web-resource-loader",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Load all resources (images, videos, fonts, audio, css and js files) asynchronously and wait for complete.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -13,6 +13,7 @@
     "test": "jest"
   },
   "author": "Daniel (https://github.com/Dani-404)",
+  "funding": "https://github.com/sponsors/Dani-404",
   "license": "ISC",
   "keywords": [
     "assets",
