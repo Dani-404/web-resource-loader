@@ -1,5 +1,7 @@
-
 ## web-resource-loader
+[![NPM version](https://img.shields.io/npm/v/web-resource-loader.svg?style=flat-square)](https://www.npmjs.com/package/web-resource-loader)
+[![Downloads](https://img.shields.io/npm/dm/web-resource-loader.svg?style=flat-square)](https://www.npmjs.com/package/web-resource-loader)
+<br />
 Load all resources (images, videos, fonts, audio, css and js files) asynchronously and wait for complete.
 
 ### Installation
