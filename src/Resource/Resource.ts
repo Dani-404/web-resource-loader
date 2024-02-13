@@ -1,13 +1,13 @@
 export class Resource {
     key: string;
-    data: HTMLImageElement | HTMLAudioElement | HTMLVideoElement | FontFace | HTMLScriptElement | HTMLLinkElement;
+    data: any;
 
-    constructor({key, data} : { key: string, data: HTMLImageElement | HTMLAudioElement | HTMLVideoElement | FontFace | HTMLScriptElement | HTMLLinkElement}) {
+    constructor({key, data} : { key: string, data: any}) {
         this.key = key;
         this.data = data;
     }
 
-    public getData(): HTMLImageElement | HTMLAudioElement | HTMLVideoElement | FontFace | HTMLScriptElement | HTMLLinkElement {
+    public getData(): any {
         return this.data;
     }
 }

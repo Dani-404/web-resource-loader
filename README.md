@@ -65,6 +65,15 @@ const audiosList = [{
     src: "assets/audios/alert.mp3"
 }]
 
+const diversesList = [{
+    key: "3dmodel",
+    src: "assets/3d/model.glb"
+},
+{
+    key: "myJson",
+    src: "http://example.com/myJson.json"
+}]
+
 const cssList = [{
     key: "myCssFile",
     src: "assets/css/file.css"
@@ -91,20 +100,15 @@ resourceManager.loadResources({
     videos: videosList,
     fonts: fontsList,
     audios: audiosList,
+    diverses: diversesList, // return an fetch() response
     css: cssList, // append automatically in <head></head>
     js: jsList // append automatically in <head></head>
-}).then((message) => {
+}).then(async (message) => {
     // all resources are loaded, do what you want after
     console.log(message);
 
-    const theSecondImage = resourceManager.getImage("myImageOtherKey"); // return an HTMLImageElement
-
-    if (theSecondImage == null) {
-        console.log("impossible to find the image with key myImageOtherKey")
-    } else {
-        document.body.appendChild(theSecondImage);
-        console.log(theSecondImage);
-    }
+    const myJson = await resourceManager.getDiverse("myJson").json(); // return an JSON parsed data
+    console.log(myJson);
 }).catch((err) => console.error(err));
 ```
 
@@ -114,5 +118,10 @@ Methods available for fetch your resoures are:
 - **getVideo(key)**
 - **getFont(key)**
 - **getAudio(key)**
+- **getDiverse(key)**
 - **getJs(key)**
 - **getCss(key)**
+
+### Dependencies
+[node-fetch](https://www.npmjs.com/package/node-fetch)<br />
+[file-fetch](https://www.npmjs.com/package/file-fetch)

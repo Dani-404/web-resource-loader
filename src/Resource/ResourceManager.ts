@@ -1,6 +1,8 @@
 import { Resource } from "./Resource";
 import { ResourceList } from "./ResourceList";
 import { ResourceType } from "./Types/ResourceType";
+import fetch from "node-fetch";
+import fetchLocale from "file-fetch";
 
 export default class ResourceManager extends EventTarget {
     images: Resource[];
@@ -9,6 +11,7 @@ export default class ResourceManager extends EventTarget {
     audios: Resource[];
     css: Resource[];
     js: Resource[];
+    diverses: Resource[];
     totalResources: number;
 
     constructor() {
@@ -20,12 +23,13 @@ export default class ResourceManager extends EventTarget {
         this.audios = [];
         this.css = [];
         this.js = [];
+        this.diverses = [];
         this.totalResources = 0;
     }
 
-    public loadResources({ images = [], videos = [], fonts = [], audios = [], css = [], js = [] }: { images?: ResourceType[]; videos?: ResourceType[]; fonts?: ResourceType[]; audios?: ResourceType[]; css?: ResourceType[]; js?: ResourceType[] }): Promise<string> {
+    public loadResources({ images = [], videos = [], fonts = [], audios = [], diverses = [], css = [], js = [] }: { images?: ResourceType[]; videos?: ResourceType[]; fonts?: ResourceType[]; audios?: ResourceType[]; css?: ResourceType[]; js?: ResourceType[], diverses?: ResourceType[] }): Promise<string> {
         return new Promise((resolve, reject) => {
-            this.totalResources = images.length + videos.length + fonts.length + audios.length;
+            this.totalResources = images.length + videos.length + fonts.length + audios.length + diverses.length + css.length + js.length;
 
             const listOfPromise = [];
 
@@ -33,7 +37,7 @@ export default class ResourceManager extends EventTarget {
                 const { key, src } = images[i];
 
                 const countItems = images.filter((image) => image.key.toUpperCase() == key.toUpperCase());
-                if(countItems.length > 1)
+                if (countItems.length > 1)
                     console.warn(`[WARNING] Duplicate image key ${key}`)
 
                 listOfPromise.push(this.loadResource({
@@ -47,7 +51,7 @@ export default class ResourceManager extends EventTarget {
                 const { key, src } = videos[i];
 
                 const countItems = videos.filter((video) => video.key.toUpperCase() == key.toUpperCase());
-                if(countItems.length > 1)
+                if (countItems.length > 1)
                     console.warn(`[WARNING] Duplicate video key ${key}`)
 
                 listOfPromise.push(this.loadResource({
@@ -61,7 +65,7 @@ export default class ResourceManager extends EventTarget {
                 const { key, src } = fonts[i];
 
                 const countItems = fonts.filter((font) => font.key.toUpperCase() == key.toUpperCase());
-                if(countItems.length > 1)
+                if (countItems.length > 1)
                     console.warn(`[WARNING] Duplicate font key ${key}`)
 
                 listOfPromise.push(this.loadResource({
@@ -75,7 +79,7 @@ export default class ResourceManager extends EventTarget {
                 const { key, src } = audios[i];
 
                 const countItems = audios.filter((audio) => audio.key.toUpperCase() == key.toUpperCase());
-                if(countItems.length > 1)
+                if (countItems.length > 1)
                     console.warn(`[WARNING] Duplicate audio key ${key}`)
 
                 listOfPromise.push(this.loadResource({
@@ -85,11 +89,25 @@ export default class ResourceManager extends EventTarget {
                 }));
             }
 
+            for (let i in diverses) {
+                const { key, src } = diverses[i];
+
+                const countItems = diverses.filter((diverse) => diverse.key.toUpperCase() == key.toUpperCase());
+                if (countItems.length > 1)
+                    console.warn(`[WARNING] Duplicate diverse key ${key}`)
+
+                listOfPromise.push(this.loadResource({
+                    type: ResourceList.DIVERSE,
+                    key,
+                    src
+                }));
+            }
+
             for (let i in css) {
                 const { key, src } = css[i];
 
                 const countItems = css.filter((cssFile) => cssFile.key.toUpperCase() == key.toUpperCase());
-                if(countItems.length > 1)
+                if (countItems.length > 1)
                     console.warn(`[WARNING] Duplicate css key ${key}`)
 
                 listOfPromise.push(this.loadResource({
@@ -103,7 +121,7 @@ export default class ResourceManager extends EventTarget {
                 const { key, src } = js[i];
 
                 const countItems = js.filter((jsFile) => jsFile.key.toUpperCase() == key.toUpperCase());
-                if(countItems.length > 1)
+                if (countItems.length > 1)
                     console.warn(`[WARNING] Duplicate js key ${key}`)
 
                 listOfPromise.push(this.loadResource({
@@ -121,7 +139,7 @@ export default class ResourceManager extends EventTarget {
     }
 
     private loadResource({ type, key, src }: { type: ResourceList; key: string; src: string }): Promise<string> {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             const instance = this;
 
             switch (type) {
@@ -177,16 +195,21 @@ export default class ResourceManager extends EventTarget {
                     );
                     document.fonts.add(fontFile);
 
-                    fontFile.load().then(() => {
+                    try {
+                        const fontLoad = await fontFile.load();
+
                         const fontResource = new Resource({
                             key: key.toUpperCase(),
-                            data: fontFile
+                            data: fontLoad
                         });
                         instance.fonts.push(fontResource);
                         instance.emitProgress();
 
                         resolve(`Font ${key} loaded.`)
-                    }).catch((e) => reject(`Impossible to load font ${key} (${src}).`))
+                    }
+                    catch (e) {
+                        reject(`Impossible to load font ${key} (${src}).`)
+                    }
                     break;
                 }
 
@@ -207,6 +230,35 @@ export default class ResourceManager extends EventTarget {
                     audio.onerror = function () {
                         reject(`Impossible to load audio ${key} (${src}).`)
                     };
+                    break;
+                }
+
+                case ResourceList.DIVERSE: {
+                    try {
+                        let file: any = null;
+
+                        if (!this.isLocale(src))
+                            file = await fetchLocale(src);
+                        else
+                            file = await fetch(src);
+
+                        if (file == null || !file.ok) {
+                            reject(`Impossible to load diverse file ${key} (${src}).`)
+                            return;
+                        }
+
+                        const diverseResource = new Resource({
+                            key: key.toUpperCase(),
+                            data: file
+                        });
+                        instance.diverses.push(diverseResource);
+                        instance.emitProgress();
+
+                        resolve(`Diverse file ${key} loaded.`)
+                    }
+                    catch (e) {
+                        reject(`Impossible to load diverse file ${key} (${src}).`)
+                    }
                     break;
                 }
 
@@ -261,6 +313,13 @@ export default class ResourceManager extends EventTarget {
         });
     }
 
+    private isLocale(src: string): boolean {
+        if (src.startsWith("http://") || src.startsWith("https://"))
+            return false;
+
+        return true;
+    }
+
     private countTotalResources(): number {
         return this.images.length + this.videos.length + this.fonts.length + this.audios.length
     }
@@ -280,6 +339,7 @@ export default class ResourceManager extends EventTarget {
     public getImage(key: string): HTMLImageElement | null {
         for (let i in this.images) {
             const image = this.images[i];
+
             if (image.key == key.toUpperCase())
                 return image.getData() as HTMLImageElement;
         }
@@ -290,6 +350,7 @@ export default class ResourceManager extends EventTarget {
     public getVideo(key: string): HTMLVideoElement | null {
         for (let i in this.videos) {
             const video = this.videos[i];
+
             if (video.key == key.toUpperCase())
                 return video.getData() as HTMLVideoElement;
         }
@@ -300,6 +361,7 @@ export default class ResourceManager extends EventTarget {
     public getFont(key: string): FontFace | null {
         for (let i in this.fonts) {
             const font = this.fonts[i];
+
             if (font.key == key.toUpperCase())
                 return font.getData() as FontFace;
         }
@@ -310,8 +372,20 @@ export default class ResourceManager extends EventTarget {
     public getAudio(key: string): HTMLAudioElement | null {
         for (let i in this.audios) {
             const audio = this.audios[i];
+
             if (audio.key == key.toUpperCase())
                 return audio.getData() as HTMLAudioElement;
+        }
+
+        return null;
+    }
+
+    public getDiverse(key: string): any {
+        for (let i in this.diverses) {
+            const diverse = this.diverses[i];
+
+            if (diverse.key == key.toUpperCase())
+                return diverse.getData();
         }
 
         return null;
@@ -320,6 +394,7 @@ export default class ResourceManager extends EventTarget {
     public getCss(key: string): HTMLLinkElement | null {
         for (let i in this.css) {
             const cssFile = this.css[i];
+
             if (cssFile.key == key.toUpperCase())
                 return cssFile.getData() as HTMLLinkElement;
         }
@@ -330,6 +405,7 @@ export default class ResourceManager extends EventTarget {
     public getJs(key: string): HTMLScriptElement | null {
         for (let i in this.js) {
             const jsFile = this.js[i];
+
             if (jsFile.key == key.toUpperCase())
                 return jsFile.getData() as HTMLScriptElement;
         }

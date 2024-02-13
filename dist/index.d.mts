@@ -1,11 +1,11 @@
 declare class Resource {
     key: string;
-    data: HTMLImageElement | HTMLAudioElement | HTMLVideoElement | FontFace | HTMLScriptElement | HTMLLinkElement;
+    data: any;
     constructor({ key, data }: {
         key: string;
-        data: HTMLImageElement | HTMLAudioElement | HTMLVideoElement | FontFace | HTMLScriptElement | HTMLLinkElement;
+        data: any;
     });
-    getData(): HTMLImageElement | HTMLAudioElement | HTMLVideoElement | FontFace | HTMLScriptElement | HTMLLinkElement;
+    getData(): any;
 }
 
 type ResourceType = {
@@ -20,23 +20,27 @@ declare class ResourceManager extends EventTarget {
     audios: Resource[];
     css: Resource[];
     js: Resource[];
+    diverses: Resource[];
     totalResources: number;
     constructor();
-    loadResources({ images, videos, fonts, audios, css, js }: {
+    loadResources({ images, videos, fonts, audios, diverses, css, js }: {
         images?: ResourceType[];
         videos?: ResourceType[];
         fonts?: ResourceType[];
         audios?: ResourceType[];
         css?: ResourceType[];
         js?: ResourceType[];
+        diverses?: ResourceType[];
     }): Promise<string>;
     private loadResource;
+    private isLocale;
     private countTotalResources;
     private emitProgress;
     getImage(key: string): HTMLImageElement | null;
     getVideo(key: string): HTMLVideoElement | null;
     getFont(key: string): FontFace | null;
     getAudio(key: string): HTMLAudioElement | null;
+    getDiverse(key: string): any;
     getCss(key: string): HTMLLinkElement | null;
     getJs(key: string): HTMLScriptElement | null;
 }
@@ -46,8 +50,9 @@ declare enum ResourceList {
     VIDEO = 1,
     FONT = 2,
     AUDIO = 3,
-    JS = 4,
-    CSS = 5
+    DIVERSE = 4,
+    JS = 5,
+    CSS = 6
 }
 
 export { ResourceList, type ResourceType, ResourceManager as default };

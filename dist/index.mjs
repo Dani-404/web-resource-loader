@@ -1,3 +1,24 @@
+var __async = (__this, __arguments, generator) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
+
 // src/Resource/Resource.ts
 var Resource = class {
   constructor({ key, data }) {
@@ -15,12 +36,15 @@ var ResourceList = /* @__PURE__ */ ((ResourceList2) => {
   ResourceList2[ResourceList2["VIDEO"] = 1] = "VIDEO";
   ResourceList2[ResourceList2["FONT"] = 2] = "FONT";
   ResourceList2[ResourceList2["AUDIO"] = 3] = "AUDIO";
-  ResourceList2[ResourceList2["JS"] = 4] = "JS";
-  ResourceList2[ResourceList2["CSS"] = 5] = "CSS";
+  ResourceList2[ResourceList2["DIVERSE"] = 4] = "DIVERSE";
+  ResourceList2[ResourceList2["JS"] = 5] = "JS";
+  ResourceList2[ResourceList2["CSS"] = 6] = "CSS";
   return ResourceList2;
 })(ResourceList || {});
 
 // src/Resource/ResourceManager.ts
+import fetch from "node-fetch";
+import fetchLocale from "file-fetch";
 var ResourceManager = class extends EventTarget {
   constructor() {
     super();
@@ -30,11 +54,12 @@ var ResourceManager = class extends EventTarget {
     this.audios = [];
     this.css = [];
     this.js = [];
+    this.diverses = [];
     this.totalResources = 0;
   }
-  loadResources({ images = [], videos = [], fonts = [], audios = [], css = [], js = [] }) {
+  loadResources({ images = [], videos = [], fonts = [], audios = [], diverses = [], css = [], js = [] }) {
     return new Promise((resolve, reject) => {
-      this.totalResources = images.length + videos.length + fonts.length + audios.length;
+      this.totalResources = images.length + videos.length + fonts.length + audios.length + diverses.length + css.length + js.length;
       const listOfPromise = [];
       for (let i in images) {
         const { key, src } = images[i];
@@ -80,13 +105,24 @@ var ResourceManager = class extends EventTarget {
           src
         }));
       }
+      for (let i in diverses) {
+        const { key, src } = diverses[i];
+        const countItems = diverses.filter((diverse) => diverse.key.toUpperCase() == key.toUpperCase());
+        if (countItems.length > 1)
+          console.warn(`[WARNING] Duplicate diverse key ${key}`);
+        listOfPromise.push(this.loadResource({
+          type: 4 /* DIVERSE */,
+          key,
+          src
+        }));
+      }
       for (let i in css) {
         const { key, src } = css[i];
         const countItems = css.filter((cssFile) => cssFile.key.toUpperCase() == key.toUpperCase());
         if (countItems.length > 1)
           console.warn(`[WARNING] Duplicate css key ${key}`);
         listOfPromise.push(this.loadResource({
-          type: 5 /* CSS */,
+          type: 6 /* CSS */,
           key,
           src
         }));
@@ -97,7 +133,7 @@ var ResourceManager = class extends EventTarget {
         if (countItems.length > 1)
           console.warn(`[WARNING] Duplicate js key ${key}`);
         listOfPromise.push(this.loadResource({
-          type: 4 /* JS */,
+          type: 5 /* JS */,
           key,
           src
         }));
@@ -107,7 +143,7 @@ var ResourceManager = class extends EventTarget {
     });
   }
   loadResource({ type, key, src }) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => __async(this, null, function* () {
       const instance = this;
       switch (type) {
         case 0 /* IMAGE */: {
@@ -151,15 +187,18 @@ var ResourceManager = class extends EventTarget {
             `url(${src})`
           );
           document.fonts.add(fontFile);
-          fontFile.load().then(() => {
+          try {
+            const fontLoad = yield fontFile.load();
             const fontResource = new Resource({
               key: key.toUpperCase(),
-              data: fontFile
+              data: fontLoad
             });
             instance.fonts.push(fontResource);
             instance.emitProgress();
             resolve(`Font ${key} loaded.`);
-          }).catch((e) => reject(`Impossible to load font ${key} (${src}).`));
+          } catch (e) {
+            reject(`Impossible to load font ${key} (${src}).`);
+          }
           break;
         }
         case 3 /* AUDIO */: {
@@ -178,7 +217,30 @@ var ResourceManager = class extends EventTarget {
           };
           break;
         }
-        case 4 /* JS */: {
+        case 4 /* DIVERSE */: {
+          try {
+            let file = null;
+            if (!this.isLocale(src))
+              file = yield fetchLocale(src);
+            else
+              file = yield fetch(src);
+            if (file == null || !file.ok) {
+              reject(`Impossible to load diverse file ${key} (${src}).`);
+              return;
+            }
+            const diverseResource = new Resource({
+              key: key.toUpperCase(),
+              data: file
+            });
+            instance.diverses.push(diverseResource);
+            instance.emitProgress();
+            resolve(`Diverse file ${key} loaded.`);
+          } catch (e) {
+            reject(`Impossible to load diverse file ${key} (${src}).`);
+          }
+          break;
+        }
+        case 5 /* JS */: {
           const script = document.createElement("script");
           script.onload = function() {
             const jsResource = new Resource({
@@ -196,7 +258,7 @@ var ResourceManager = class extends EventTarget {
           document.head.appendChild(script);
           break;
         }
-        case 5 /* CSS */: {
+        case 6 /* CSS */: {
           let link = document.createElement("link");
           link.type = "text/css";
           link.rel = "stylesheet";
@@ -217,7 +279,12 @@ var ResourceManager = class extends EventTarget {
           break;
         }
       }
-    });
+    }));
+  }
+  isLocale(src) {
+    if (src.startsWith("http://") || src.startsWith("https://"))
+      return false;
+    return true;
   }
   countTotalResources() {
     return this.images.length + this.videos.length + this.fonts.length + this.audios.length;
@@ -261,6 +328,14 @@ var ResourceManager = class extends EventTarget {
       const audio = this.audios[i];
       if (audio.key == key.toUpperCase())
         return audio.getData();
+    }
+    return null;
+  }
+  getDiverse(key) {
+    for (let i in this.diverses) {
+      const diverse = this.diverses[i];
+      if (diverse.key == key.toUpperCase())
+        return diverse.getData();
     }
     return null;
   }
