@@ -33,7 +33,6 @@ declare class ResourceManager extends EventTarget {
         diverses?: ResourceType[];
     }): Promise<string>;
     private loadResource;
-    private isLocale;
     private countTotalResources;
     private emitProgress;
     getImage(key: string): HTMLImageElement | null;

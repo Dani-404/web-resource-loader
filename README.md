@@ -121,7 +121,3 @@ Methods available for fetch your resoures are:
 - **getDiverse(key)**
 - **getJs(key)**
 - **getCss(key)**
-
-### Dependencies
-[node-fetch](https://www.npmjs.com/package/node-fetch)<br />
-[file-fetch](https://www.npmjs.com/package/file-fetch)

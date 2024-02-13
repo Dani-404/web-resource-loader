@@ -43,8 +43,6 @@ var ResourceList = /* @__PURE__ */ ((ResourceList2) => {
 })(ResourceList || {});
 
 // src/Resource/ResourceManager.ts
-import fetch from "node-fetch";
-import fetchLocale from "file-fetch";
 var ResourceManager = class extends EventTarget {
   constructor() {
     super();
@@ -139,7 +137,7 @@ var ResourceManager = class extends EventTarget {
         }));
       }
       this.dispatchEvent(new CustomEvent("start"));
-      Promise.all(listOfPromise).then(() => resolve(`[ResourceManager] All resources have been loaded (${images.length} images, ${videos.length} videos, ${fonts.length} fonts, ${audios.length} audios, ${js.length} js files, ${css.length} css files).`)).catch((e) => reject(`[ResourceManager ERROR] ${e}`));
+      Promise.all(listOfPromise).then(() => resolve(`[ResourceManager] All resources have been loaded (${images.length} images, ${videos.length} videos, ${fonts.length} fonts, ${audios.length} audios, ${diverses.length} diverses files, ${js.length} js files, ${css.length} css files).`)).catch((e) => reject(`[ResourceManager ERROR] ${e}`));
     });
   }
   loadResource({ type, key, src }) {
@@ -219,11 +217,7 @@ var ResourceManager = class extends EventTarget {
         }
         case 4 /* DIVERSE */: {
           try {
-            let file = null;
-            if (!this.isLocale(src))
-              file = yield fetchLocale(src);
-            else
-              file = yield fetch(src);
+            let file = yield fetch(src);
             if (file == null || !file.ok) {
               reject(`Impossible to load diverse file ${key} (${src}).`);
               return;
@@ -280,11 +274,6 @@ var ResourceManager = class extends EventTarget {
         }
       }
     }));
-  }
-  isLocale(src) {
-    if (src.startsWith("http://") || src.startsWith("https://"))
-      return false;
-    return true;
   }
   countTotalResources() {
     return this.images.length + this.videos.length + this.fonts.length + this.audios.length;

@@ -1,8 +1,6 @@
 import { Resource } from "./Resource";
 import { ResourceList } from "./ResourceList";
 import { ResourceType } from "./Types/ResourceType";
-import fetch from "node-fetch";
-import fetchLocale from "file-fetch";
 
 export default class ResourceManager extends EventTarget {
     images: Resource[];
@@ -133,7 +131,7 @@ export default class ResourceManager extends EventTarget {
 
             this.dispatchEvent(new CustomEvent("start"));
             Promise.all(listOfPromise)
-                .then(() => resolve(`[ResourceManager] All resources have been loaded (${images.length} images, ${videos.length} videos, ${fonts.length} fonts, ${audios.length} audios, ${js.length} js files, ${css.length} css files).`))
+                .then(() => resolve(`[ResourceManager] All resources have been loaded (${images.length} images, ${videos.length} videos, ${fonts.length} fonts, ${audios.length} audios, ${diverses.length} diverses files, ${js.length} js files, ${css.length} css files).`))
                 .catch((e) => reject(`[ResourceManager ERROR] ${e}`));
         });
     }
@@ -235,12 +233,7 @@ export default class ResourceManager extends EventTarget {
 
                 case ResourceList.DIVERSE: {
                     try {
-                        let file: any = null;
-
-                        if (!this.isLocale(src))
-                            file = await fetchLocale(src);
-                        else
-                            file = await fetch(src);
+                        let file = await fetch(src);
 
                         if (file == null || !file.ok) {
                             reject(`Impossible to load diverse file ${key} (${src}).`)
@@ -311,13 +304,6 @@ export default class ResourceManager extends EventTarget {
                 }
             }
         });
-    }
-
-    private isLocale(src: string): boolean {
-        if (src.startsWith("http://") || src.startsWith("https://"))
-            return false;
-
-        return true;
     }
 
     private countTotalResources(): number {

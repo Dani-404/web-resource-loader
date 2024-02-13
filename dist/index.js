@@ -1,9 +1,7 @@
 "use strict";
-var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __export = (target, all) => {
   for (var name in all)
@@ -17,14 +15,6 @@ var __copyProps = (to, from, except, desc) => {
   }
   return to;
 };
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
-  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-  mod
-));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
@@ -79,8 +69,6 @@ var ResourceList = /* @__PURE__ */ ((ResourceList2) => {
 })(ResourceList || {});
 
 // src/Resource/ResourceManager.ts
-var import_node_fetch = __toESM(require("node-fetch"));
-var import_file_fetch = __toESM(require("file-fetch"));
 var ResourceManager = class extends EventTarget {
   constructor() {
     super();
@@ -175,7 +163,7 @@ var ResourceManager = class extends EventTarget {
         }));
       }
       this.dispatchEvent(new CustomEvent("start"));
-      Promise.all(listOfPromise).then(() => resolve(`[ResourceManager] All resources have been loaded (${images.length} images, ${videos.length} videos, ${fonts.length} fonts, ${audios.length} audios, ${js.length} js files, ${css.length} css files).`)).catch((e) => reject(`[ResourceManager ERROR] ${e}`));
+      Promise.all(listOfPromise).then(() => resolve(`[ResourceManager] All resources have been loaded (${images.length} images, ${videos.length} videos, ${fonts.length} fonts, ${audios.length} audios, ${diverses.length} diverses files, ${js.length} js files, ${css.length} css files).`)).catch((e) => reject(`[ResourceManager ERROR] ${e}`));
     });
   }
   loadResource({ type, key, src }) {
@@ -255,11 +243,7 @@ var ResourceManager = class extends EventTarget {
         }
         case 4 /* DIVERSE */: {
           try {
-            let file = null;
-            if (!this.isLocale(src))
-              file = yield (0, import_file_fetch.default)(src);
-            else
-              file = yield (0, import_node_fetch.default)(src);
+            let file = yield fetch(src);
             if (file == null || !file.ok) {
               reject(`Impossible to load diverse file ${key} (${src}).`);
               return;
@@ -316,11 +300,6 @@ var ResourceManager = class extends EventTarget {
         }
       }
     }));
-  }
-  isLocale(src) {
-    if (src.startsWith("http://") || src.startsWith("https://"))
-      return false;
-    return true;
   }
   countTotalResources() {
     return this.images.length + this.videos.length + this.fonts.length + this.audios.length;
